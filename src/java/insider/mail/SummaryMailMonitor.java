@@ -1,7 +1,11 @@
-package insider;
+package insider.mail;
+
+import java.util.Timer;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
 
 
 
@@ -34,6 +38,11 @@ public class SummaryMailMonitor {
 		logger.info("Launching Insider Summary Email Monitor version: " + VERSION);
 	}
 	
+	/** The timer object for counting out intervals*/
+	private static Timer timer = new Timer();
+	
+	private static int lastTotalOfLines = 0; //TODO: Comment
+	
 	// Initialisation Variables - to be read in shortly
 	
 	/** The URL of interest, which we monitor */
@@ -48,6 +57,40 @@ public class SummaryMailMonitor {
 	/** The interval of interest*/
 	public static long interval = 60000;
 	
+	/** Can arrange for alert to occur only after x number of failures */
 	public static int failsBeforeAlert;
+	
+	/** Default Constructor */
+	public SummaryMailMonitor() {
+		logEP();
+		initialise();
+	}
+	
+	public void initialise(){
+		logEP();
+		PropertyConfigurator.configure("log4j.properties");
+		logger.info("Starting up Insider Summary eMail Monitor, version: " + VERSION);
+		
+	}
+	
+	public static void main(String[] args) {
+		new SummaryMailMonitor();//.initialise();
+	}
+	
+	// Interesting way to log location in program - can actually also 
+	/** Convenience Method to log class and method entry point */
+	public static void logEP() {
+		logger.debug("Entering " + SummaryMailMonitor.currentClassName() + " " + SummaryMailMonitor.currentMethodName() + "() method!");
+	}
+	
+	/** Determines the current class name */
+	public static String currentClassName() {   
+		return Thread.currentThread().getStackTrace()[3].getClassName();
+	}
+	
+	/** Determines the current method name */
+	public static String currentMethodName() {   
+		return Thread.currentThread().getStackTrace()[3].getMethodName();
+	}
 
 }
