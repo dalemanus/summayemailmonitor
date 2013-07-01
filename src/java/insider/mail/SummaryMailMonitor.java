@@ -1,5 +1,9 @@
 package insider.mail;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
 import java.util.Timer;
 
 import org.apache.log4j.BasicConfigurator;
@@ -25,7 +29,7 @@ public class SummaryMailMonitor {
 	private static final Logger logger = Logger.getLogger(SummaryMailMonitor.class);
 	
 	/** the default name of the application config file */
-	private static String configFile = "smm_config.xml";
+	private static String configFile = "smm_config.props";
 	
 	/** log4j configuration file */
 	private static String loggingPropsFile = "log4j.properties";
@@ -71,6 +75,31 @@ public class SummaryMailMonitor {
 		PropertyConfigurator.configure("log4j.properties");
 		logger.info("Starting up Insider Summary eMail Monitor, version: " + VERSION);
 		
+		Properties properties = loadProps();
+		
+		alertThresholdDown = -1 * Integer.parseInt(properties.getProperty("ThresholdDown", "100")); // TODO: Make more robust
+		alertThresholdUp = Integer.parseInt(properties.getProperty("ThresholdUp", "1000"));
+		interval = Integer.parseInt(properties.getProperty("Interval", "60000"));
+		
+		logger.info("Down threshold: " + alertThresholdDown + " items");
+		logger.info("UP threshold: " + alertThresholdUp + " items");
+		logger.info("Interval: " + interval + " items");
+		
+	}
+	
+	//TODO Perhaps Handle Exception better
+	/** Load up any changes from a properties file */
+	private Properties loadProps() {
+		Properties props = new Properties();
+		try {
+			props.load(new FileReader("./" + configFile));
+		} catch (FileNotFoundException e) {
+			logger.error("There is no sign of a configuration file - defaults will be used", e);
+		} catch (IOException e) {
+			logger.fatal("There was an I/O problem reading configuration file - exiting program", e);
+			System.exit(1);
+		}
+		return props;
 	}
 	
 	public static void main(String[] args) {
