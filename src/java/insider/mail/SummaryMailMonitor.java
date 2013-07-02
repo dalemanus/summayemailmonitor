@@ -3,8 +3,16 @@ package insider.mail;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
+import java.net.Proxy;
+import java.net.SocketAddress;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Properties;
 import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
@@ -39,6 +47,7 @@ public class SummaryMailMonitor {
 		/* Creates console appender with following Patternlayout: "%-4r [%t] %-5p %c %x - %m%n". */
 		/* That is: time(ms), threadname, loglevel, loggername, Nested Diagnostic Context, message, line separator */
 		BasicConfigurator.configure();
+		logEP();
 		logger.info("Launching Insider Summary Email Monitor version: " + VERSION);
 	}
 	
@@ -64,11 +73,58 @@ public class SummaryMailMonitor {
 	/** Can arrange for alert to occur only after x number of failures */
 	public static int failsBeforeAlert;
 	
+	// Proxy Details
+	private final static SocketAddress addr = new InetSocketAddress("mhsproxy.datastream.com", 80);
+	private final static Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
+	
+	///static URLConnection conn;
+	///static InputStream inStream;
+	
+	
 	/** Default Constructor */
 	public SummaryMailMonitor() {
 		logEP();
 		initialise();
+		
+		//-process();
+		
+		
 	}
+	
+	public void process() {
+//		try {
+//			url = new URL(TEST_URL);
+//			printUrlInfo(url); // If you want this info
+//			conn = url.openConnection(proxy);
+//			inStream = conn.getInputStream();
+//			
+//			processURLConn(conn);
+//			
+//			timer.schedule(new TimerTask() {
+//				@Override
+//				public void run() {
+//					///-System.out.println("Timeoid!!");
+//					processURLConnAlert(conn);
+//				}
+//			}, interval, interval);
+//			
+//			
+//		} catch (MalformedURLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}	
+//		try {
+//			Thread.sleep(10000000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		System.err.println("Dead as a doughnut");
+	}
+
 	
 	public void initialise(){
 		logEP();
@@ -100,6 +156,27 @@ public class SummaryMailMonitor {
 			System.exit(1);
 		}
 		return props;
+	}
+	
+	/** An internal method to reveal characteristics of a URL object*/
+	private static void printUrlInfo(URL url) {
+		if (url != null) {
+			System.out.println("Protocol: " + url.getProtocol());
+			System.out.println("Authority: " + url.getAuthority());
+			System.out.println("Host: " + url.getHost());
+			System.out.println("Port: " + url.getPort());
+			System.out.println("Path: " + url.getPath());
+			System.out.println("Query: " + url.getQuery());
+			System.out.println("File: " + url.getFile());
+			System.out.println("Ref: " + url.getRef());
+			System.out.println("\nOptional:\n");
+			System.out.println("Default Port" + url.getDefaultPort());
+			System.out.println("UserInfo: " + url.getUserInfo());
+			
+			
+		} else {
+			System.out.println("Null URL provided!!");
+		}
 	}
 	
 	public static void main(String[] args) {
