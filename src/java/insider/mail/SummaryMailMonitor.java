@@ -1,5 +1,7 @@
 package insider.mail;
 
+import insider.utils.UrlUtils;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -86,36 +88,36 @@ public class SummaryMailMonitor {
 		logEP();
 		initialise();
 		
-		//-process();
+		process();
 		
 		
 	}
 	
 	public void process() {
-//		try {
-//			url = new URL(TEST_URL);
-//			printUrlInfo(url); // If you want this info
-//			conn = url.openConnection(proxy);
-//			inStream = conn.getInputStream();
+		try {
+			final URL url = new URL(TEST_URL);
+			if (true) UrlUtils.printUrlInfo(url); // If you want this info
+			URLConnection conn = url.openConnection(proxy);
+			InputStream inStream = conn.getInputStream();
+			
+			UrlUtils.processURLConn(url, proxy);
+			
+			timer.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					///- System.out.println("Timeoid!! " + System.currentTimeMillis());
+					UrlUtils.processURLConnAlert(url, proxy);
+				}
+			}, interval, interval);
 //			
-//			processURLConn(conn);
 //			
-//			timer.schedule(new TimerTask() {
-//				@Override
-//				public void run() {
-//					///-System.out.println("Timeoid!!");
-//					processURLConnAlert(conn);
-//				}
-//			}, interval, interval);
-//			
-//			
-//		} catch (MalformedURLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}	
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 //		try {
 //			Thread.sleep(10000000);
 //		} catch (InterruptedException e) {
@@ -158,27 +160,7 @@ public class SummaryMailMonitor {
 		return props;
 	}
 	
-	/** An internal method to reveal characteristics of a URL object*/
-	private static void printUrlInfo(URL url) {
-		if (url != null) {
-			System.out.println("Protocol: " + url.getProtocol());
-			System.out.println("Authority: " + url.getAuthority());
-			System.out.println("Host: " + url.getHost());
-			System.out.println("Port: " + url.getPort());
-			System.out.println("Path: " + url.getPath());
-			System.out.println("Query: " + url.getQuery());
-			System.out.println("File: " + url.getFile());
-			System.out.println("Ref: " + url.getRef());
-			System.out.println("\nOptional:\n");
-			System.out.println("Default Port" + url.getDefaultPort());
-			System.out.println("UserInfo: " + url.getUserInfo());
-			
-			
-		} else {
-			System.out.println("Null URL provided!!");
-		}
-	}
-	
+
 	public static void main(String[] args) {
 		new SummaryMailMonitor();//.initialise();
 	}
