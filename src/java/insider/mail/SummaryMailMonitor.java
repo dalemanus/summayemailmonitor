@@ -1,5 +1,6 @@
 package insider.mail;
 
+import insider.utils.GeneralUtils;
 import insider.utils.UrlUtils;
 
 import java.io.FileNotFoundException;
@@ -19,6 +20,8 @@ import java.util.TimerTask;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+
+import static insider.utils.GeneralUtils.*;
 
 
 
@@ -106,7 +109,7 @@ public class SummaryMailMonitor {
 				@Override
 				public void run() {
 					///- System.out.println("Timeoid!! " + System.currentTimeMillis());
-					UrlUtils.processURLConnAlert(url, proxy);
+					AlertProcessor.processURLConnAlert(url, proxy);
 				}
 			}, interval, interval);
 //			
@@ -165,20 +168,6 @@ public class SummaryMailMonitor {
 		new SummaryMailMonitor();//.initialise();
 	}
 	
-	// Interesting way to log location in program - can actually also 
-	/** Convenience Method to log class and method entry point */
-	public static void logEP() {
-		logger.debug("Entering " + SummaryMailMonitor.currentClassName() + " " + SummaryMailMonitor.currentMethodName() + "() method!");
-	}
-	
-	/** Determines the current class name */
-	public static String currentClassName() {   
-		return Thread.currentThread().getStackTrace()[3].getClassName();
-	}
-	
-	/** Determines the current method name */
-	public static String currentMethodName() {   
-		return Thread.currentThread().getStackTrace()[3].getMethodName();
-	}
+
 
 }
