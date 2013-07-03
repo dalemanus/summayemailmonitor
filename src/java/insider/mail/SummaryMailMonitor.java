@@ -59,6 +59,9 @@ public class SummaryMailMonitor {
 	/** The timer object for counting out intervals*/
 	private static Timer timer = new Timer();
 	
+	/**   */
+	private AlertProcessor alertProcessor = new AlertProcessor();;
+	
 	private static int lastTotalOfLines = 0; //TODO: Comment
 	
 	// Initialisation Variables - to be read in shortly
@@ -79,16 +82,25 @@ public class SummaryMailMonitor {
 	public static int failsBeforeAlert;
 	
 	// Proxy Details
-	private final static SocketAddress addr = new InetSocketAddress("mhsproxy.datastream.com", 80);
-	private final static Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
+	private final SocketAddress addr; 
+	private final Proxy proxy;
 	
 	///static URLConnection conn;
 	///static InputStream inStream;
 	
 	
 	/** Default Constructor */
-	public SummaryMailMonitor() {
+	public SummaryMailMonitor(String[] args) {
 		logEP();
+		
+		if (args.length == 0)
+			addr = new InetSocketAddress("mhsproxy.datastream.com", 80);
+		else if (args.length == 1)
+			addr = new InetSocketAddress(args[0], 80);
+		else
+			addr = new InetSocketAddress(args[1], 80);
+		
+		proxy = new Proxy(Proxy.Type.HTTP, addr);	
 		initialise();
 		
 		process();
@@ -109,7 +121,7 @@ public class SummaryMailMonitor {
 				@Override
 				public void run() {
 					///- System.out.println("Timeoid!! " + System.currentTimeMillis());
-					AlertProcessor.processURLConnAlert(url, proxy);
+					alertProcessor.processURLConnAlert(url, proxy);
 				}
 			}, interval, interval);
 //			
@@ -138,13 +150,13 @@ public class SummaryMailMonitor {
 		
 		Properties properties = loadProps();
 		
-		alertThresholdDown = -1 * Integer.parseInt(properties.getProperty("ThresholdDown", "100")); // TODO: Make more robust
+		alertThresholdDown = Integer.parseInt(properties.getProperty("ThresholdDown", "100")); // TODO: Make more robust
 		alertThresholdUp = Integer.parseInt(properties.getProperty("ThresholdUp", "1000"));
 		interval = Integer.parseInt(properties.getProperty("Interval", "60000"));
 		
 		logger.info("Down threshold: " + alertThresholdDown + " items");
 		logger.info("UP threshold: " + alertThresholdUp + " items");
-		logger.info("Interval: " + interval + " items");
+		logger.info("Interval: " + interval + " items\n");
 		
 	}
 	
@@ -165,7 +177,7 @@ public class SummaryMailMonitor {
 	
 
 	public static void main(String[] args) {
-		new SummaryMailMonitor();//.initialise();
+		new SummaryMailMonitor(args);//.initialise();
 	}
 	
 

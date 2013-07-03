@@ -1,5 +1,5 @@
 //Set up Properties
 
-ThresholdDown=100
+ThresholdDown=50
 ThresholdUp=1000
 Interval=30000
