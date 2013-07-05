@@ -93,26 +93,39 @@ public class SummaryMailMonitor {
 	public SummaryMailMonitor(String[] args) {
 		logEP();
 		
-		if (args.length == 0)
-			addr = new InetSocketAddress("mhsproxy.datastream.com", 80);
-		else if (args.length == 1)
-			addr = new InetSocketAddress(args[0], 80);
-		else
-			addr = new InetSocketAddress(args[1], 80);
-		
-		proxy = new Proxy(Proxy.Type.HTTP, addr);	
 		initialise();
 		
+		if (args.length == 0) {
+			addr = new InetSocketAddress("mhsproxy.datastream.com", 80);
+			proxy = new Proxy(Proxy.Type.HTTP, addr);
+		} else if (args.length == 1 && !args[0].trim().equals("") && !args[0].equalsIgnoreCase("null")) {
+			addr = new InetSocketAddress(args[0], 80);
+			proxy = new Proxy(Proxy.Type.HTTP, addr);
+		} else if (args.length >= 2 && !args[0].trim().equals("") && !args[1].trim().equals("") && !args[0].equalsIgnoreCase("null")) {
+			addr = new InetSocketAddress(args[0], Integer.parseInt(args[1]));
+			proxy = new Proxy(Proxy.Type.HTTP, addr);
+		} else {
+			addr = null;
+			proxy = null;
+		}
+		if (proxy != null)
+			logger.info("Proxy Details: " + proxy.toString());	
+		else
+			logger.info("Proxy Details: NONE"); 
+		
 		process();
-		
-		
 	}
 	
 	public void process() {
 		try {
 			final URL url = new URL(TEST_URL);
 			if (true) UrlUtils.printUrlInfo(url); // If you want this info
-			URLConnection conn = url.openConnection(proxy);
+			URLConnection conn;
+			if (proxy != null)
+				conn = url.openConnection(proxy);
+			else
+				conn = url.openConnection();
+			
 			InputStream inStream = conn.getInputStream();
 			
 			UrlUtils.processURLConn(url, proxy);
@@ -156,7 +169,7 @@ public class SummaryMailMonitor {
 		
 		logger.info("Down threshold: " + alertThresholdDown + " items");
 		logger.info("UP threshold: " + alertThresholdUp + " items");
-		logger.info("Interval: " + interval + " items\n");
+		logger.info("Interval: " + interval + " milliseconds\n");
 		
 	}
 	
