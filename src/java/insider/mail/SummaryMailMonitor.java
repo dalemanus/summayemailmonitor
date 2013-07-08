@@ -1,6 +1,7 @@
 package insider.mail;
 
 import insider.utils.GeneralUtils;
+import insider.utils.Observable;
 import insider.utils.UrlUtils;
 
 import java.io.FileNotFoundException;
@@ -33,10 +34,10 @@ import static insider.utils.GeneralUtils.*;
  * @author dale.macdonald
  *
  */
-public class SummaryMailMonitor {
+public class SummaryMailMonitor extends Observable{
 	
 	/** Version Number */
-	private static final String VERSION = "0.50";
+	private static final String VERSION = "0.51";
 	
 	/** the logging object for this class. */
 	private static final Logger logger = Logger.getLogger(SummaryMailMonitor.class);
@@ -134,7 +135,8 @@ public class SummaryMailMonitor {
 				@Override
 				public void run() {
 					///- System.out.println("Timeoid!! " + System.currentTimeMillis());
-					alertProcessor.processURLConnAlert(url, proxy);
+					String result = alertProcessor.processURLConnAlert(url, proxy);
+					SummaryMailMonitor.this.updateAll(result);
 				}
 			}, interval, interval);
 //			

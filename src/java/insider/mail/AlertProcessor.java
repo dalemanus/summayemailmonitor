@@ -28,9 +28,10 @@ public class AlertProcessor {
 	private static int lastTotalOfLines = -1;
 	
 	/**  */
-	public void processURLConnAlert(URL url, Proxy proxy) {
+	public String processURLConnAlert(URL url, Proxy proxy) {
 		BufferedReader in;
 		String inputLine;
+		String result = "";
 		try {
 			URLConnection conn;
 			if (proxy != null)
@@ -44,6 +45,7 @@ public class AlertProcessor {
 			
 			
 			int deltaLines = 0;
+			
 			while ((inputLine = in.readLine()) != null)
 			    if (inputLine.contains("pending_summary_emails: ")) {
 			    	int newTot = Integer.parseInt(inputLine.substring(24).trim());
@@ -51,27 +53,32 @@ public class AlertProcessor {
 			    	if (lastTotalOfLines == -1) {
 			    		print("Initialising Counter...", true);
 			    		lastTotalOfLines = newTot;
-			    		return;
+			    		return "<>Initialising Counter...";
 			    	}
 			    	if (lastTotalOfLines == 0) {
 			    		print("Email queue is currently empty!", true);
 			    		lastTotalOfLines = newTot;
-			    		return;
+			    		return "<>Email queue is currently empty!";
 			    	}
 			    	
 			    	deltaLines = newTot - lastTotalOfLines;
 			    	lastTotalOfLines = newTot;
-			    	GeneralUtils.print("Lines: " + newTot + " Change: " + deltaLines, true) ;
+			    	result = "Lines: " + newTot + " Change: " + deltaLines;
+			    	GeneralUtils.print(result, true) ;
 			    }
 			
 			alert(deltaLines);
 			
 			in.close();
 			
+			
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			logger.error("A problem processing the alerts!! ", e);
 		}
+		
+		return result;
 	}
 	
 	/**  */
