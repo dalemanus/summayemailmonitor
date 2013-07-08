@@ -111,18 +111,22 @@ public class SummaryMailGUI extends JPanel implements Observer{
 		
 		JScrollPane scrollPane = new JScrollPane(textArea);
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
-		tabbedPane.add(scrollPane);
+		
+		tabbedPane.add("Mail Log", scrollPane);
+		tabbedPane.add("Mail Graph", new BasicGraph());
+		//tabbedPane.add("Mail Graph", new JPanel());
+		
 		panel.add(tabbedPane);
 		
 		return panel;
 	}
 	
 	private static void createAndShowGUI() {
-		JFrame frame = new JFrame();
+		JFrame frame = new JFrame("Insider Summary eMail Monitor");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setContentPane(new SummaryMailGUI());
 		frame.pack();
-		frame.setResizable(false);
+		//frame.setResizable(false);
 		frame.setVisible(true);
 	}
 	
