@@ -27,6 +27,12 @@ import javax.swing.JTextArea;
 
 import org.apache.log4j.Logger;
 
+import de.erichseifert.gral.data.Column;
+import de.erichseifert.gral.data.DataTable;
+import de.erichseifert.gral.data.statistics.Statistics;
+import de.erichseifert.gral.plots.Plot;
+import de.erichseifert.gral.plots.XYPlot;
+
 
 /**
  * A first GUI to incorporate the services provided by  the core summary mail monitor
@@ -37,6 +43,8 @@ import org.apache.log4j.Logger;
  */
 public class SummaryMailGUI extends JPanel implements Observer{
 	
+	static double GLOOG = 1.0; 
+	
 	/** Version Number */
 	private static final String VERSION = "0.50";
 
@@ -45,6 +53,9 @@ public class SummaryMailGUI extends JPanel implements Observer{
 	
 	/** The component which displays results of the mail queue check */
 	private final JTextArea textArea = new JTextArea("Summary Email Results:");
+	
+	/** The component which produces a simple line-graph of mail queue */
+	private final BasicGraph basicGraph;
 	
 	private final Observable model = new SummaryMailMonitor(new String[]{"mhsproxy.datastream.com", "80"});
 	//private final Observable model = new SummaryMailMonitor(new String[]{"null", "80"});
@@ -60,6 +71,7 @@ public class SummaryMailGUI extends JPanel implements Observer{
 		setBackground(Color.GRAY);
 		model.registerObserver(this);
 		textArea.setEditable(false);
+		basicGraph = new BasicGraph();
 		initialise();
 	}
 	
@@ -113,7 +125,7 @@ public class SummaryMailGUI extends JPanel implements Observer{
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
 		
 		tabbedPane.add("Mail Log", scrollPane);
-		tabbedPane.add("Mail Graph", new BasicGraph());
+		tabbedPane.add("Mail Graph", basicGraph);
 		//tabbedPane.add("Mail Graph", new JPanel());
 		
 		panel.add(tabbedPane);
@@ -142,9 +154,39 @@ public class SummaryMailGUI extends JPanel implements Observer{
 
 	@Override
 	public void update(String result) {
+		String lines = null;
+		int i = 7;
+		if (result.contains("Lines:")) {
+			lines = "";
+			while (Character.isDigit(result.charAt(i++)))
+				lines += result.charAt(i++);
+		}
+		double total = 0.0;
+		if (lines != null)
+			total = Double.parseDouble(lines);
 		//textArea.setText(textArea.getText() + result + "\n");
 		textArea.append(result + "\n");
 		textArea.setCaretPosition(textArea.getDocument().getLength());
+		DataTable data = basicGraph.getDataTable();
+		//data.add(GLOOG++,10.0 + GLOOG);
+		double time = System.currentTimeMillis();
+		data.add(time, total);
+		XYPlot plot = basicGraph.getPlot();
 		
+		///data.remove(0);
+
+//		Column col1 = data.getColumn(0);
+//		plot.getAxis(XYPlot.AXIS_X).setRange(
+//			col1.getStatistics(Statistics.MIN),
+//			col1.getStatistics(Statistics.MAX)
+//		);
+
+		//plot.getAxis(XYPlot.AXIS_Y).setRange(
+		//		0, GLOOG + 15);
+		
+		plot.getAxis(XYPlot.AXIS_Y).setRange(
+			0, total + 10);
+		
+		basicGraph.getPanel().repaint();
 	}
 }
