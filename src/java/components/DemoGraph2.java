@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.RadialGradientPaint;
 import java.awt.geom.Point2D;
+import java.text.DateFormat;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -25,23 +26,30 @@ import de.erichseifert.gral.util.Insets2D;
  * @author dale.macdonald
  *
  */
-public class DemoGraph extends JPanel {
+public class DemoGraph2 extends JPanel {
 	
 	private DataTable dataTable;
 	private XYPlot plot;
 	private InteractivePanel panel;
 	
-	public DemoGraph() {
+	public DemoGraph2() {
 		setBackground(Color.YELLOW);
 		setLayout(new BorderLayout());
 		
 		//1) The Data Source
 		dataTable = new DataTable(Double.class, Double.class);
 		
-		//Sine wave
-		for (double x = -5.0; x <= 5.0; x+=0.25) {
-		    double y = 5.0*Math.sin(x);
+		//Growing Wave
+		for (int i = 0; i < 20; i++) {
+			double x = System.currentTimeMillis();
+		    double y = 5.0 * i;
 		    dataTable.add(x, y);
+		    try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		    //System.out.println(dataTable.getRow(dataTable.getRowCount()).);
 		}
 		System.out.println("Row Count: " + dataTable.getRowCount());
@@ -52,7 +60,7 @@ public class DemoGraph extends JPanel {
 		// Format plot
 		plot.setInsets(new Insets2D.Double(20.0, 40.0, 40.0, 40.0));
 		plot.setSetting(XYPlot.BACKGROUND, Color.WHITE);
-		plot.setSetting(XYPlot.TITLE, "Goop");
+		plot.setSetting(XYPlot.TITLE, "Plot against Time");
 		
 		// Format plot area
 		plot.getPlotArea().setSetting(PlotArea.BACKGROUND, new RadialGradientPaint(
@@ -74,13 +82,14 @@ public class DemoGraph extends JPanel {
 		
 		
 		// Draw a tick mark and a grid line every 10 units along x axis
-		plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.TICKS_SPACING,  10.0);
+		///plot.getAxisRenderer(XYPlot.AXIS_X).setSetting(AxisRenderer.TICKS_SPACING,  10.0);
 		// Draw a tick mark and a grid line every 20 units along y axis
 		///plot.getAxisRenderer(XYPlot.AXIS_Y).setSetting(AxisRenderer.TICKS_SPACING,  20.0);
 		
 		// Format Axes
 		AxisRenderer axisRendererX = plot.getAxisRenderer(XYPlot.AXIS_X);
-		axisRendererX.setSetting(AxisRenderer.LABEL, "Radians axis");
+		axisRendererX.setSetting(AxisRenderer.LABEL, "Time");
+		axisRendererX.setSetting(AxisRenderer.TICK_LABELS_FORMAT, DateFormat.getTimeInstance());
 		
 		panel = new InteractivePanel(plot);
 		this.add(panel, BorderLayout.CENTER);
@@ -91,7 +100,7 @@ public class DemoGraph extends JPanel {
 	
 	private static void createAndShowGUI() {
 		JFrame frame = new JFrame("Live Graph Demo");
-		frame.setContentPane(new DemoGraph());
+		frame.setContentPane(new DemoGraph2());
 		frame.pack();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
@@ -107,3 +116,4 @@ public class DemoGraph extends JPanel {
 		});
 	}
 }
+

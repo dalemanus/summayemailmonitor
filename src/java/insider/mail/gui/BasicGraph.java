@@ -70,10 +70,10 @@ public class BasicGraph extends JPanel {
 		// Format axes (set scale and spacings)
 		plot.getAxis(XYPlot.AXIS_Y).setRange(0.0, 1.0);
 		AxisRenderer axisRendererX = plot.getAxisRenderer(XYPlot.AXIS_X);
-		axisRendererX.setSetting(AxisRenderer.TICKS_SPACING, 50);
+		axisRendererX.setSetting(AxisRenderer.TICKS_SPACING, 5000);
 		axisRendererX.setSetting(AxisRenderer.TICK_LABELS_FORMAT, DateFormat.getTimeInstance());
 		AxisRenderer axisRendererY = plot.getAxisRenderer(XYPlot.AXIS_Y);
-		axisRendererY.setSetting(AxisRenderer.TICKS_MINOR_COUNT, 40);
+		axisRendererY.setSetting(AxisRenderer.TICKS_MINOR_COUNT, 100);
 		axisRendererY.setSetting(AxisRenderer.TICK_LABELS_FORMAT, new DecimalFormat("0 Mails"));
 		
 		panel = new InteractivePanel(plot);
