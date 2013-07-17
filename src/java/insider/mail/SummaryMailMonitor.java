@@ -90,6 +90,8 @@ public class SummaryMailMonitor extends Observable{
 	///static InputStream inStream;
 	
 	
+
+
 	/** Default Constructor */
 	public SummaryMailMonitor(String[] args) {
 		logEP();
@@ -113,6 +115,8 @@ public class SummaryMailMonitor extends Observable{
 			logger.info("Proxy Details: " + proxy.toString());	
 		else
 			logger.info("Proxy Details: NONE"); 
+		
+		
 		
 		process();
 	}
@@ -172,7 +176,16 @@ public class SummaryMailMonitor extends Observable{
 		logger.info("Down threshold: " + alertThresholdDown + " items");
 		logger.info("UP threshold: " + alertThresholdUp + " items");
 		logger.info("Interval: " + interval + " milliseconds\n");
-		
+			
+	}
+	
+	/**
+	 * Proxy accessor
+	 * @return the proxy, if any
+	 */
+	
+	public Proxy getProxy() {
+		return proxy;
 	}
 	
 	//TODO Perhaps Handle Exception better

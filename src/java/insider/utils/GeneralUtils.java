@@ -1,5 +1,8 @@
 package insider.utils;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
+
 import insider.mail.SummaryMailMonitor;
 
 import org.apache.log4j.Logger;
@@ -45,6 +48,12 @@ public class GeneralUtils {
 	/** Convenience Method to log class and method entry point */
 	public static void logEP() {
 		logger.debug("Entering " + currentClassName() + " " + GeneralUtils.currentMethodName() + "() method!");
+	}
+	
+	/**  Get the screen resolution*/
+	public static Dimension getScreenSize() {
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		return toolkit.getScreenSize();
 	}
 	
 	/** Determines the current class name */

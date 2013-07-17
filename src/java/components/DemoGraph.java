@@ -10,15 +10,19 @@ import java.awt.geom.Point2D;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import de.erichseifert.gral.data.DataSeries;
 import de.erichseifert.gral.data.DataTable;
+import de.erichseifert.gral.plots.Plot;
 import de.erichseifert.gral.plots.PlotArea;
 import de.erichseifert.gral.plots.XYPlot;
 import de.erichseifert.gral.plots.axes.AxisRenderer;
+import de.erichseifert.gral.plots.legends.Legend;
 import de.erichseifert.gral.plots.lines.DefaultLineRenderer2D;
 import de.erichseifert.gral.plots.lines.LineRenderer;
 import de.erichseifert.gral.plots.points.PointRenderer;
 import de.erichseifert.gral.ui.InteractivePanel;
 import de.erichseifert.gral.util.Insets2D;
+import de.erichseifert.gral.util.Orientation;
 
 /**
  * Attempt to demo an auto updating graph and all the bits that surround it
@@ -27,7 +31,7 @@ import de.erichseifert.gral.util.Insets2D;
  */
 public class DemoGraph extends JPanel {
 	
-	private DataTable dataTable;
+	private DataTable dataTable1, dataTable2;
 	private XYPlot plot;
 	private InteractivePanel panel;
 	
@@ -35,24 +39,44 @@ public class DemoGraph extends JPanel {
 		setBackground(Color.YELLOW);
 		setLayout(new BorderLayout());
 		
-		//1) The Data Source
-		dataTable = new DataTable(Double.class, Double.class);
+		//1) The Data Source (a)
+		dataTable1 = new DataTable(Double.class, Double.class);
+		
 		
 		//Sine wave
 		for (double x = -5.0; x <= 5.0; x+=0.25) {
 		    double y = 5.0*Math.sin(x);
-		    dataTable.add(x, y);
+		    dataTable1.add(x, y);
 		    //System.out.println(dataTable.getRow(dataTable.getRowCount()).);
 		}
-		System.out.println("Row Count: " + dataTable.getRowCount());
-		System.out.println("Col Count: " + dataTable.getColumnCount());
+		System.out.println("Row Count: " + dataTable1.getRowCount());
+		System.out.println("Col Count: " + dataTable1.getColumnCount());
+		
+		//1) The Data Source (b)
+		dataTable2 = new DataTable(Double.class, Double.class);
+		
+		//Cos wave
+				for (double x = -5.0; x <= 5.0; x+=0.25) {
+				    double y = 5.0*Math.cos(x);
+				    dataTable2.add(x, y);
+				    //System.out.println(dataTable.getRow(dataTable.getRowCount()).);
+				}
+				System.out.println("Row Count: " + dataTable2.getRowCount());
+				System.out.println("Col Count: " + dataTable2.getColumnCount());
+		
 		//2) The Plot Type
-		plot = new XYPlot(dataTable);
+		DataSeries ds = new DataSeries("Sine", dataTable1);
+		plot = new XYPlot(ds, dataTable2);
 		
 		// Format plot
 		plot.setInsets(new Insets2D.Double(20.0, 40.0, 40.0, 40.0));
 		plot.setSetting(XYPlot.BACKGROUND, Color.WHITE);
 		plot.setSetting(XYPlot.TITLE, "Goop");
+		plot.setSetting(Plot.LEGEND, true);
+		
+		// Format legend
+		plot.getLegend().setSetting(Legend.ORIENTATION, Orientation.HORIZONTAL);
+		plot.getLegend().setSetting(Legend.ALIGNMENT_Y, 1.0);
 		
 		// Format plot area
 		plot.getPlotArea().setSetting(PlotArea.BACKGROUND, new RadialGradientPaint(
@@ -64,13 +88,21 @@ public class DemoGraph extends JPanel {
 		
 		
 		//Line and Plot Renderers
-		LineRenderer lines = new DefaultLineRenderer2D();
-		plot.setLineRenderer(dataTable, lines);
+		LineRenderer lines1 = new DefaultLineRenderer2D();
+		plot.setLineRenderer(ds, lines1);
 		
 		Color color = new Color(0.0f, 0.3f, 1.0f);
-		plot.getPointRenderer(dataTable).setSetting(PointRenderer.COLOR, color);
+		plot.getPointRenderer(ds).setSetting(PointRenderer.COLOR, color);
 		Color color2 = new Color(1.0f, 0.3f, 0.0f);
-		plot.getLineRenderer(dataTable).setSetting(LineRenderer.COLOR, color2);
+		plot.getLineRenderer(ds).setSetting(LineRenderer.COLOR, color2);
+		
+		LineRenderer lines2 = new DefaultLineRenderer2D();
+		plot.setLineRenderer(dataTable2, lines2);
+		
+		Color color3 = new Color(0.0f, 0.0f, 0.0f);
+		plot.getPointRenderer(dataTable2).setSetting(PointRenderer.COLOR, color3);
+		Color color4 = new Color(0.3f, 1.0f, 0.0f);
+		plot.getLineRenderer(dataTable2).setSetting(LineRenderer.COLOR, color4);
 		
 		
 		// Draw a tick mark and a grid line every 10 units along x axis
